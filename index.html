@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0"
+		/>
+		<title>GitHub Location Search</title>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+			}
+			#search-btn {
+				cursor: pointer;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Search GitHub Users by Location</h1>
+		<div id="count"></div>
+		<input
+			type="text"
+			id="location"
+			placeholder="Enter location"
+		/>
+		<input
+			type="number"
+			id="per-page"
+			placeholder="# Results"
+		/>
+		<button id="search-btn">Search</button>
+		<ul id="results"></ul>
+
+		<script>
+			let perPage;
+			document
+				.getElementById('search-btn')
+				.addEventListener('click', function () {
+					const location = document.getElementById('location').value;
+					perPage = document.getElementById('per-page').value;
+					searchGitHubUsersByLocation(location);
+				});
+
+			async function searchGitHubUsersByLocation(location) {
+				const resultsElement = document.getElementById('results');
+				resultsElement.innerHTML = '';
+				try {
+					const response = await fetch(
+						`https://api.github.com/search/users?q=location:${encodeURIComponent(
+							location
+						)}&per_page=${perPage || '10'}`
+					);
+					if (!response.ok) {
+						throw new Error(`GitHub API Error: ${response.statusText}`);
+					}
+					const data = await response.json();
+					if (data.items.length === 0) {
+						resultsElement.innerHTML = '<li>No users found.</li>';
+					} else {
+						data.items.forEach((user) => {
+							const listItem = document.createElement('li');
+							listItem.innerHTML = `<a href="${user.html_url}" target="_blank">${user.login}</a>`;
+							resultsElement.appendChild(listItem);
+						});
+					}
+				} catch (error) {
+					resultsElement.innerHTML = `<li>Error: ${error.message}</li>`;
+				}
+			}
+		</script>
+	</body>
+</html>
