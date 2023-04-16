@@ -6,6 +6,19 @@
 			name="viewport"
 			content="width=device-width, initial-scale=1.0"
 		/>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<script>
+			tailwind.config = {
+				plugins: [require('@tailwindcss/forms')],
+				theme: {
+					extend: {
+						colors: {
+							clifford: '#da373d',
+						},
+					},
+				},
+			};
+		</script>
 		<title>GitHub Location Search</title>
 		<style>
 			body {
@@ -17,55 +30,97 @@
 		</style>
 	</head>
 	<body>
-		<h1>Search GitHub Users by Location</h1>
-		<div id="count"></div>
-		<input
-			type="text"
-			id="location"
-			placeholder="Enter location"
-		/>
-		<input
-			type="number"
-			id="per-page"
-			placeholder="# Results"
-		/>
-		<button id="search-btn">Search</button>
+		<h1 class="text-lg font-bold leading-6 text-center">
+			Search GitHub Users by Location, Language, and Followers
+		</h1>
+		<div class="px-56">
+			<input
+				type="text"
+				id="location"
+				placeholder="Enter location"
+				class="block w-full m-3 p-3 min-w-0 flex-1 rounded-none rounded-r-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+			/>
+			<input
+				type="text"
+				id="language"
+				class="block w-full m-3 p-3 min-w-0 flex-1 rounded-none rounded-r-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+				placeholder="Enter programming language"
+			/>
+
+			<input
+				type="number"
+				id="min-followers"
+				class="block w-full m-3 p-3 min-w-0 flex-1 rounded-none rounded-r-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+				placeholder="Minimum followers"
+			/>
+			<input
+				type="number"
+				id="per-page"
+				class="block w-full m-3 p-3 min-w-0 flex-1 rounded-none rounded-r-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+				placeholder="# Results"
+			/>
+			<select id="sort">
+				<option value="best-match">Best match</option>
+				<option value="followers">Followers</option>
+				<option value="repositories">Repositories</option>
+			</select>
+			<button
+				id="search-btn"
+				class="rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+			>
+				Search
+			</button>
+		</div>
 		<ul id="results"></ul>
 
 		<script>
-			let perPage;
+			let perPage = '10';
 			document
 				.getElementById('search-btn')
 				.addEventListener('click', function () {
 					const location = document.getElementById('location').value;
+					const language = document.getElementById('language').value;
+					const minFollowers = document.getElementById('min-followers').value;
 					perPage = document.getElementById('per-page').value;
-					searchGitHubUsersByLocation(location);
+					const sort = document.getElementById('sort').value;
+					searchGitHubUsers(location, language, minFollowers, sort);
 				});
 
-			async function searchGitHubUsersByLocation(location) {
+			async function searchGitHubUsers(location, language, minFollowers, sort) {
 				const resultsElement = document.getElementById('results');
 				resultsElement.innerHTML = '';
+				const query = `location:${encodeURIComponent(location)}${
+					language ? `+language:${encodeURIComponent(language)}` : ''
+				}${minFollowers ? `+followers:>${minFollowers}` : ''}`;
+				const sortParam = sort === 'best-match' ? '' : `&sort=${sort}`;
 				try {
 					const response = await fetch(
-						`https://api.github.com/search/users?q=location:${encodeURIComponent(
-							location
-						)}&per_page=${perPage || '10'}`
+						`https://api.github.com/search/users?q=${query}${sortParam}&per_page=${perPage}`
 					);
 					if (!response.ok) {
 						throw new Error(`GitHub API Error: ${response.statusText}`);
 					}
 					const data = await response.json();
 					if (data.items.length === 0) {
-						resultsElement.innerHTML = '<li>No users found.</li>';
+						resultsElement.innerHTML =
+							'<p class="bg-rose-500">No users found.</p>';
 					} else {
 						data.items.forEach((user) => {
-							const listItem = document.createElement('li');
-							listItem.innerHTML = `<a href="${user.html_url}" target="_blank">${user.login}</a>`;
+							const listItem = document.createElement('div');
+							const anchor = document.createElement('a');
+							anchor.href = user.html_url;
+							anchor.target = '_blank';
+							listItem.setAttribute(
+								'class',
+								'hover:bg-indigo-500 hover:text-white py-1 px-3 my-1 mx-1'
+							);
+							anchor.textContent = user.login;
+							listItem.appendChild(anchor);
 							resultsElement.appendChild(listItem);
 						});
 					}
 				} catch (error) {
-					resultsElement.innerHTML = `<li>Error: ${error.message}</li>`;
+					resultsElement.innerHTML = `<li class="bg-rose-500">Error: ${error.message}</li>`;
 				}
 			}
 		</script>
