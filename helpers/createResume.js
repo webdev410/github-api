@@ -56,7 +56,7 @@ const createResumeHtml = (repoData) => {
 
 	// Process each repo
 	repoData.forEach((repo) => {
-		console.log({ repoName: repo.name });
+		console.log({ repoName: repo.name, topics: repo.topics });
 
 		// Use a temporary variable for each repo to avoid overwriting templateContent
 		let repoHtml = templateContent.split('<!-- repos -->')[1];
@@ -67,7 +67,10 @@ const createResumeHtml = (repoData) => {
 		repoHtml = repoHtml.replace('{{REPO-DESCRIPTION}}', repo.description);
 		repoHtml = repoHtml.replace('{{REPO-VISIBILITY}}', repo.visibility);
 		repoHtml = repoHtml.replace('{{REPO-MAIN-LANGUAGE}}', repo.language);
-		repoHtml = repoHtml.replace('{{REPO-TOPICS}}', repo.topics.join(', '));
+		repoHtml = repoHtml.replace(
+			'{{REPO-TOPICS}}',
+			repo.topics.length ? repo.topics.join(', ') : ''
+		);
 		repoHtml = repoHtml.replace('{{REPO-COMMITS}}', repo.numberOfCommits);
 		repoHtml = repoHtml.replace(
 			'{{REPO-CREATED-DATE}}',
@@ -80,6 +83,8 @@ const createResumeHtml = (repoData) => {
 		repoHtml = repoHtml.replace('{{REPO-URL}}', repo.url);
 		repoHtml = repoHtml.replace('{{REPO-README}}', repo.readme);
 
+		repoHtml = repoHtml.replace('{{WEBSITE-URL}}', repo.website);
+		repoHtml = repoHtml.replace('{{website-url}}', repo.website);
 		// Append the repo HTML to the resume HTML
 		resumeHtml += repoHtml;
 	});

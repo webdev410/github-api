@@ -1,5 +1,5 @@
 #!/bin/bash
-token="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"
+token="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"
 curl -H "Authorization: token $token" https://api.github.com/search/repositories?q=user:webdev410\&per_page=100 >data/repos.json
 # get second page
 curl -H "Authorization: token $token" https://api.github.com/search/repositories?q=user:webdev410\&per_page=100\&page=2 >data/repos2.json

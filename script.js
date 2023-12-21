@@ -1,7 +1,8 @@
 import dotenv from 'dotenv';
 import fs from 'fs';
-import createResumeFromRepoData from './helpers/createResume.js';
 import path from 'path';
+import addTopicsToRepos from './helpers/addTopicsToRepos.js';
+import createResumeFromRepoData from './helpers/createResume.js';
 import getDescription from './helpers/getDescription.js';
 dotenv.config();
 
@@ -37,9 +38,9 @@ export async function fetchGitHubData(username, token) {
 			const rdata = JSON.parse(data).items;
 			repos.push(...rdata);
 		}
-
 		console.log({ repos: repos.length });
 
+		await addTopicsToRepos(repos);
 		// *Format Each Repo
 		for (const repo of repos) {
 			// get all pages
@@ -59,6 +60,8 @@ export async function fetchGitHubData(username, token) {
 			let commitsByYear = {};
 
 			for (const commit of commits) {
+				console.log({ commit });
+
 				const year = extractYear(commit.commit.committer.date);
 				commitsByYear[year] = (commitsByYear[year] || 0) + 1;
 			}
@@ -73,13 +76,13 @@ export async function fetchGitHubData(username, token) {
 				createdAt: repo.created_at,
 				updatedAt: repo.updated_at,
 				forksCount: repo.forks_count,
+				website: repo.homepage || '',
 				starsCount: repo.stargazers_count,
 				topics: repo.topics,
 				readme: `https://github.com/${username}/${repo.name}/tree/${repo.default_branch}#readme`,
 				visibility: repo.visibility,
 			};
-
-			resumeData.push(repoData);
+			if (repoData.numberOfCommits > 1) resumeData.push(repoData);
 		}
 
 		// sort by name
@@ -99,7 +102,7 @@ export async function fetchGitHubData(username, token) {
 			}
 		};
 
-		const sorted = sortBy('commits');
+		const sorted = sortBy('lastUpdated');
 
 		// resumeData.push({ commitsByYear });
 		createResumeFromRepoData(sorted);

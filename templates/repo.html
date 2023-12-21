@@ -31,8 +31,9 @@
 								<th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Topics</th>
 								<th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Created At</th>
 								<th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Last Updated</th>
-								<th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"> Readme URL </th>
-								<th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"> Repo URL </th>
+								<th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Readme URL </th>
+								<th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Repo URL </th>
+								<th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Webite</th>
 								<th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Description</th>
 							</tr>
 						</thead>
@@ -44,7 +45,7 @@
 								<td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{REPO-COMMITS}}</td>
 								<td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{REPO-VISIBILITY}}</td>
 								<td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{REPO-MAIN-LANGUAGE}}</td>
-								<td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{REPO-REPO-TOPICS}}</td>
+								<td class="whitespace-wrap min-w-[250px] px-3 py-4 text-sm text-gray-500 ">{{REPO-TOPICS}}</td>
 								<td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{REPO-CREATED-DATE}}</td>
 								<td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{REPO-LAST-UPDATED}}</td>
 								<td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
@@ -54,6 +55,11 @@
 								<td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
 									<a href="{{REPO-URL}}" target="_blank" class="text-indigo-600 hover:text-indigo-900">Repo Url<span
 											class="sr-only">link to repository</span></a>
+								</td>
+								<td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+									<a href="{{WEBSITE-URL}}" target="_blank"
+										class="text-indigo-600 hover:text-indigo-900">{{website-url}}<span class="sr-only">link to
+											website</span></a>
 								</td>
 								<td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{REPO-DESCRIPTION}}</td>
 							</tr>
