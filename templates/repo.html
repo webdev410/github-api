@@ -25,14 +25,15 @@
 						<thead>
 							<tr>
 								<th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Name</th>
-								<th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Main Language</th>
 								<th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Commits</th>
+								<th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Visibility</th>
+								<th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Main Language</th>
+								<th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Topics</th>
 								<th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Created At</th>
 								<th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Last Updated</th>
+								<th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"> Readme URL </th>
+								<th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"> Repo URL </th>
 								<th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Description</th>
-								<th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0">
-									<span class="sr-only">Repo URL</span>
-								</th>
 							</tr>
 						</thead>
 						<tbody class="divide-y divide-gray-200">
@@ -40,15 +41,21 @@
 							<tr>
 								<td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">{{REPO-NAME}}
 								</td>
-								<td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{REPO-MAIN-LANGUAGE}}</td>
 								<td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{REPO-COMMITS}}</td>
+								<td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{REPO-VISIBILITY}}</td>
+								<td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{REPO-MAIN-LANGUAGE}}</td>
+								<td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{REPO-REPO-TOPICS}}</td>
 								<td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{REPO-CREATED-DATE}}</td>
 								<td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{REPO-LAST-UPDATED}}</td>
-								<td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{REPO-DESCRIPTION}}</td>
-								<td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-									<a href="{{REPO-URL}}" class="text-indigo-600 hover:text-indigo-900">Repo Url<span
-											class="sr-only">{{REPO-LAST-UPDATED}}</span></a>
+								<td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+									<a href="{{REPO-README}}" target="_blank" class="text-indigo-600 hover:text-indigo-900">Readme<span
+											class="sr-only">link to readme</span></a>
 								</td>
+								<td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+									<a href="{{REPO-URL}}" target="_blank" class="text-indigo-600 hover:text-indigo-900">Repo Url<span
+											class="sr-only">link to repository</span></a>
+								</td>
+								<td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{REPO-DESCRIPTION}}</td>
 							</tr>
 
 							<!-- end -->

@@ -1,6 +1,8 @@
 import dotenv from 'dotenv';
 import fs from 'fs';
 import createResumeFromRepoData from './helpers/createResume.js';
+import path from 'path';
+import getDescription from './helpers/getDescription.js';
 dotenv.config();
 
 export async function fetchGitHubData(username, token) {
@@ -11,43 +13,97 @@ export async function fetchGitHubData(username, token) {
 
 	// Function to fetch paginated GitHub API data
 	async function fetchGitHubApi(apiUrl) {
-		const response = await fetch(apiUrl, { headers });
-		if (!response.ok) {
-			throw new Error(`GitHub API responded with status ${response.status}`);
+		try {
+			const response = await fetch(apiUrl, { headers });
+			return await response.json();
+		} catch (error) {
+			return console.error(error);
 		}
-		return await response.json();
 	}
+
+	function extractYear(dateString) {
+		return new Date(dateString).getFullYear();
+	}
+
 	try {
-		const repos = await fetchGitHubApi(
-			`https://api.github.com/users/${username}/repos`
-			// `https://api.github.com/search/repositories?q=user:${username}`
-		);
-
-		// Array to hold formatted data for resume
 		let resumeData = [];
+		const folder = fs.readdirSync(path.join(path.resolve(), './data'));
+		const folderPath = path.join(path.resolve(), './data');
+		console.log({ folder });
 
+		let repos = [];
+		for (const file of folder) {
+			let data = fs.readFileSync(path.join(folderPath, file), 'utf8');
+			const rdata = JSON.parse(data).items;
+			repos.push(...rdata);
+		}
+
+		console.log({ repos: repos.length });
+
+		// *Format Each Repo
 		for (const repo of repos) {
-			const commits = await fetchGitHubApi(
-				`https://api.github.com/repos/${username}/${repo.name}/commits`
+			// get all pages
+			let commits = [];
+			let page = 1;
+			let response = await fetchGitHubApi(
+				`https://api.github.com/repos/${username}/${repo.name}/commits?per_page=100&page=${page}`
 			);
+			while (response.length > 0) {
+				commits.push(...response);
+				page++;
+				response = await fetchGitHubApi(
+					`https://api.github.com/repos/${username}/${repo.name}/commits?per_page=100&page=${page}`
+				);
+			}
 
-			// Extracting relevant data
+			let commitsByYear = {};
+
+			for (const commit of commits) {
+				const year = extractYear(commit.commit.committer.date);
+				commitsByYear[year] = (commitsByYear[year] || 0) + 1;
+			}
+
 			const repoData = {
 				name: repo.name,
 				numberOfCommits: commits.length,
+				commitsByYear: commitsByYear,
 				url: repo.html_url,
-				description: repo.description,
+				description: repo.description || getDescription(repo.name),
 				language: repo.language,
 				createdAt: repo.created_at,
 				updatedAt: repo.updated_at,
 				forksCount: repo.forks_count,
 				starsCount: repo.stargazers_count,
+				topics: repo.topics,
+				readme: `https://github.com/${username}/${repo.name}/tree/${repo.default_branch}#readme`,
+				visibility: repo.visibility,
 			};
 
 			resumeData.push(repoData);
 		}
-		createResumeFromRepoData(resumeData);
-		return resumeData;
+
+		// sort by name
+		const sortBy = (key) => {
+			if (key === 'name') {
+				return resumeData.sort((a, b) => a.name.localeCompare(b.name));
+			} else if (key === 'createdAt') {
+				return resumeData.sort(
+					(a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+				);
+			} else if (key === 'lastUpdated') {
+				return resumeData.sort(
+					(a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+				);
+			} else {
+				return resumeData.sort((a, b) => b[key] - a[key]);
+			}
+		};
+
+		const sorted = sortBy('commits');
+
+		// resumeData.push({ commitsByYear });
+		createResumeFromRepoData(sorted);
+		return sorted;
 	} catch (error) {
 		console.error('Failed to fetch GitHub data:', error);
 		return null;

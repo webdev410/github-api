@@ -12,7 +12,7 @@ document.body.innerHTML = resumeHtml; // Render the resume in the body of the we
  */
 export default function createResumeFromRepoData(repoData) {
 	// Start with a header for the resume
-	let resumeText = `GitHub Projects`;
+	let resumeText = `GitHub Projects\n`;
 	// Loop through each repository and add its details to the resume
 	const resumeTextData = createResumeText(repoData);
 	const resumeHtmlData = createResumeHtml(repoData);
@@ -20,9 +20,25 @@ export default function createResumeFromRepoData(repoData) {
 	fs.writeFileSync('output/resume.html', resumeHtmlData);
 	return { resumeTextData, resumeHtmlData };
 }
-
+/**
+ * 
+ * @param 
+ * 		{	name: repo.name,
+				numberOfCommits: commits.length,
+				commitsByYear: commitsByYear,
+				url: repo.html_url,
+				description: repo.description,
+				language: repo.language,
+				createdAt: repo.created_at,
+				updatedAt: repo.updated_at,
+				forksCount: repo.forks_count,
+				starsCount: repo.stargazers_count,
+				topics: repo.topics,
+				visibility: repo.visibility,} repoData 
+ * @returns 
+ */
 const createResumeText = (repoData) => {
-	let resumeText = `GitHub Projects`;
+	let resumeText = `GitHub Projects\n`;
 	repoData.forEach((repo) => {
 		resumeText += `${repo.name}\n${repo.description || 'No description'}\n${
 			repo.language || 'N/A'
@@ -40,6 +56,8 @@ const createResumeHtml = (repoData) => {
 
 	// Process each repo
 	repoData.forEach((repo) => {
+		console.log({ repoName: repo.name });
+
 		// Use a temporary variable for each repo to avoid overwriting templateContent
 		let repoHtml = templateContent.split('<!-- repos -->')[1];
 		repoHtml = repoHtml.split('<!-- end -->')[0];
@@ -47,7 +65,9 @@ const createResumeHtml = (repoData) => {
 		// Replace placeholders with actual data
 		repoHtml = repoHtml.replace('{{REPO-NAME}}', repo.name);
 		repoHtml = repoHtml.replace('{{REPO-DESCRIPTION}}', repo.description);
+		repoHtml = repoHtml.replace('{{REPO-VISIBILITY}}', repo.visibility);
 		repoHtml = repoHtml.replace('{{REPO-MAIN-LANGUAGE}}', repo.language);
+		repoHtml = repoHtml.replace('{{REPO-TOPICS}}', repo.topics.join(', '));
 		repoHtml = repoHtml.replace('{{REPO-COMMITS}}', repo.numberOfCommits);
 		repoHtml = repoHtml.replace(
 			'{{REPO-CREATED-DATE}}',
@@ -58,6 +78,7 @@ const createResumeHtml = (repoData) => {
 			new Date(repo.updatedAt).toLocaleDateString()
 		);
 		repoHtml = repoHtml.replace('{{REPO-URL}}', repo.url);
+		repoHtml = repoHtml.replace('{{REPO-README}}', repo.readme);
 
 		// Append the repo HTML to the resume HTML
 		resumeHtml += repoHtml;
