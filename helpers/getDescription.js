@@ -3,7 +3,7 @@ const getDescription = (repoName) => {
 		case 'react':
 			return 'A declarative, efficient, and flexible JavaScript library for building user interfaces.';
 		default:
-			return 'default repo description';
+			return '';
 	}
 };
 export default getDescription;
